@@ -5,25 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ARC Offline Wallet Generator</title>
 
-    <!-- Main stylesheet -->
-    <link rel="stylesheet" href="style.css"/>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Load required libraries (CDN first, guaranteed to load before script.js) -->
+    <script>
+        function loadScript(src, callback) {
+            const s = document.createElement("script");
+            s.src = src;
+            s.onload = callback;
+            s.onerror = () => console.error("Failed to load:", src);
+            document.head.appendChild(s);
+        }
+
+        // Load ethers first (required for wallet generation)
+        loadScript("https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js", () => {
+            console.log("ethers.js loaded");
+        });
+
+        // Load QRCode library
+        loadScript("https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js", () => {
+            console.log("QRCode library loaded");
+        });
+    </script>
 </head>
+
 <body>
     <div class="wrap">
 
-        <!-- Left panel – generator -->
+        <!-- Left Panel (Wallet Generator) -->
         <div class="card main">
             <h1>ARC Offline Wallet Generator</h1>
             <p class="lead">
-                Generate ARC wallets securely inside your browser.  
+                Secure ARC wallet generation directly in your browser.<br>
                 <strong>No data is ever uploaded.</strong>
             </p>
 
-            <!-- Wallet generation settings -->
+            <!-- Wallet Settings -->
             <div class="row">
                 <div class="col">
                     <label>Number of wallets</label>
-                    <input id="count" type="number" min="1" max="1000" value="1" />
+                    <input id="count" type="number" min="1" max="1000" value="1">
                 </div>
 
                 <div class="col">
@@ -35,42 +57,42 @@
                 </div>
             </div>
 
-            <!-- Mnemonic & derivation settings -->
+            <!-- Mnemonic Derivation Options -->
             <div id="mnemonicBox" class="col" style="display:none;">
                 <label>Mnemonic phrase:</label>
-                <textarea id="mnemonicInput" rows="2" placeholder="enter your seed phrase"></textarea>
+                <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic phrase"></textarea>
 
-                <label>Derivation path template</label>
-                <input id="derivationPath" type="text" value="m/44'/60'/0'/0/{index}" />
-                <span class="small">Use {index} placeholder to generate multiple wallets.</span>
+                <label>Derivation Path Template</label>
+                <input id="derivationPath" type="text" value="m/44'/60'/0'/0/{index}">
+                <span class="small">Use {index} to derive multiple wallets.</span>
             </div>
 
-            <!-- Action buttons -->
+            <!-- Buttons -->
             <div class="row buttons">
                 <button id="generateBtn">🔐 Generate Wallets</button>
                 <button id="clearBtn" class="ghost">Clear</button>
                 <button id="downloadAllBtn" class="ghost">📥 Download All (.txt)</button>
             </div>
 
-            <!-- Output area -->
+            <!-- Output List -->
             <div id="resultArea" class="result"></div>
 
             <footer>
                 <div class="small danger"><strong>Warning:</strong> Never share your private keys.</div>
                 <div class="small">
-                    For full offline usage, add <code>ethers.min.js</code> and <code>qrcode.min.js</code> inside <code>/libs</code>.
+                    Works fully offline after first load (cached CDN scripts).
                 </div>
             </footer>
         </div>
 
-        <!-- Right panel – QR preview -->
+        <!-- Right Panel (QR Preview & Utilities) -->
         <div class="card side">
             <h2>Preview / Utilities</h2>
             <div id="qrcode" class="qrcode">QR</div>
 
             <div class="actions">
-                <button id="genExample" class="ghost">Generate Example Wallet</button>
-                <button id="copyExample" class="ghost">Copy Example Address</button>
+                <button id="genExample" class="ghost">Generate Example</button>
+                <button id="copyExample" class="ghost">Copy Sample Address</button>
             </div>
 
             <div class="small features">
@@ -78,36 +100,15 @@
                 <ul>
                     <li>Offline wallet generation</li>
                     <li>Mnemonic + Private Key + Public Key</li>
-                    <li>Export Keystore (JSON encrypted)</li>
-                    <li>Custom derivation path</li>
+                    <li>Encrypted Keystore JSON export</li>
+                    <li>Custom derivation paths</li>
                 </ul>
             </div>
         </div>
 
     </div>
 
-    <!-- Local libs with CDN fallback -->
-    <script>
-        function loadScript(src) {
-            const s = document.createElement("script");
-            s.src = src;
-            document.head.appendChild(s);
-        }
-
-        // Try loading offline versions first
-        loadScript("libs/ethers.min.js");
-        loadScript("libs/qrcode.min.js");
-
-        // Fallback after 300ms if not loaded
-        setTimeout(() => {
-            if (typeof ethers === "undefined")
-                loadScript("https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js");
-
-            if (typeof QRCode === "undefined")
-                loadScript("https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js");
-        }, 300);
-    </script>
-
+    <!-- Main App Logic -->
     <script src="script.js"></script>
 </body>
 </html>
