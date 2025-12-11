@@ -197,9 +197,4 @@ button.ghost {
         width: 180px;
         height: 180px;
     }
-    /* Spacing between example buttons and Features section */
-.actions {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;  /* 👈 espaço solicitado */
 }
