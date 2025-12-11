@@ -23,16 +23,20 @@ body {
     padding: 22px;
 }
 
-/* --- CORE LAYOUT --- */
+/* --- MAIN LAYOUT --- */
 .wrap {
     width: 100%;
     max-width: 1100px;
+
     display: grid;
     grid-template-columns: 1fr 360px;
     gap: 20px;
     margin-bottom: 40px;
+
+    align-items: start;   /* 👈 FIXA ALTURA DO PREVIEW PARA NÃO ESTICAR */
 }
 
+/* --- CARDS --- */
 .card {
     background: var(--card);
     padding: 20px;
@@ -41,13 +45,12 @@ body {
     border: 1px solid rgba(255,255,255,0.04);
 }
 
-/* --- TEXT --- */
-h1 { margin: 0 0 10px; font-size: 26px; }
-h2 { margin: 0 0 10px; }
+h1 { margin-bottom: 10px; font-size: 26px; }
+h2 { margin-bottom: 10px; }
 
 .lead { color: var(--muted); margin-bottom: 16px; }
 
-/* --- FORMS --- */
+/* --- INPUT AREAS --- */
 .row { display: flex; gap: 12px; }
 .col { display: flex; flex-direction: column; gap: 8px; }
 
@@ -97,7 +100,7 @@ button.ghost {
     border: 1px solid rgba(255,255,255,0.15);
 }
 
-/* --- BUTTON GROUP INSIDE EACH WALLET CARD --- */
+/* --- BUTTON ROW INSIDE WALLET --- */
 .btn-row {
     display: flex;
     gap: 8px;
@@ -108,10 +111,9 @@ button.ghost {
 .btn-row button {
     font-size: 13px;
     padding: 8px 12px;
-    white-space: nowrap;
 }
 
-/* --- RESULT CARDS --- */
+/* --- RESULT BLOCK --- */
 .result {
     display: grid;
     gap: 14px;
@@ -138,10 +140,11 @@ button.ghost {
     width: 200px;
     height: 200px;
     display: none;
-    margin: 22px auto;
+
+    margin: 22px auto 30px auto; /* mais espaço */
 }
 
-/* --- TYPOGRAPHY --- */
+/* --- TEXT --- */
 .small { font-size: 13px; color: var(--muted); }
 .danger { color: #ff6f6f; font-weight: bold; }
 
@@ -169,7 +172,7 @@ button.ghost {
     opacity: 0.7;
 }
 
-/* --- COPY SUCCESS ANIMATION --- */
+/* --- COPY ANIMATION --- */
 @keyframes copySuccess {
     0% { transform: scale(1); background: var(--accent); }
     30% { transform: scale(0.93); background: #22c55e; }
@@ -185,17 +188,13 @@ button.ghost {
     .wrap {
         grid-template-columns: 1fr;
     }
-    .wrap {
-    width: 100%;
-    max-width: 1100px;
 
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 20px;
-
-    margin-bottom: 40px;
-
-    align-items: start;   /* 👈 impede o esticamento vertical */
+    .side {
+        margin-top: 20px;
     }
 
+    .qrcode {
+        width: 180px;
+        height: 180px;
+    }
 }
