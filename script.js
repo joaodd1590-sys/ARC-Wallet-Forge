@@ -14,25 +14,25 @@ const qrcodeEl = $("qrcode");
 const genExample = $("genExample");
 const copyExample = $("copyExample");
 
-// Copy animation handler
+/* --- ANIMATION FUNCTION --- */
 function animateCopy(btn) {
     btn.classList.add("copy-animate");
     setTimeout(() => btn.classList.remove("copy-animate"), 350);
 }
 
-// Toggle mnemonic box
+/* --- MNEMONIC TOGGLE --- */
 deriveMode.addEventListener("change", () => {
     mnemonicBox.style.display =
         deriveMode.value === "fromMnemonic" ? "block" : "none";
 });
 
-// Clear page
+/* --- CLEAR PAGE --- */
 clearBtn.addEventListener("click", () => {
     resultArea.innerHTML = "";
     qrcodeEl.style.display = "none";
 });
 
-// MAIN WALLET GENERATION
+/* --- WALLET GENERATOR --- */
 generateBtn.addEventListener("click", async () => {
     if (!window.ethers) return alert("Ethers.js not loaded.");
 
@@ -46,6 +46,7 @@ generateBtn.addEventListener("click", async () => {
         baseMnemonic = mnemonicInput.value.trim();
 
         if (!baseMnemonic) return alert("Enter mnemonic.");
+
         if (!ethers.utils.isValidMnemonic(baseMnemonic)) {
             if (!confirm("Invalid mnemonic. Continue?")) return;
         }
@@ -86,7 +87,7 @@ Private Key:
 <span id="pk_${i}">${privateKey}</span>
         `;
 
-        // Create buttons
+        /* --- BUTTONS --- */
         const qrBtn = document.createElement("button");
         qrBtn.textContent = "QR";
         qrBtn.className = "ghost";
@@ -110,6 +111,22 @@ Private Key:
         const hidePk = document.createElement("button");
         hidePk.textContent = "Hide";
         hidePk.className = "ghost";
+
+        /* --- BUTTON ROW WRAPPER --- */
+        const btnRow = document.createElement("div");
+        btnRow.className = "btn-row";
+
+        btnRow.appendChild(qrBtn);
+        btnRow.appendChild(copyAddr);
+        btnRow.appendChild(copyPk);
+        btnRow.appendChild(dlTxt);
+        btnRow.appendChild(dlJson);
+        btnRow.appendChild(hidePk);
+
+        box.appendChild(btnRow);
+
+
+        /* --- BUTTON LOGIC --- */
 
         // QR
         qrBtn.addEventListener("click", () => {
@@ -141,11 +158,11 @@ Address: ${address}
 Public Key: ${publicKey}
 Private Key: ${privateKey}
 Mnemonic: ${mnemonic}
-            `;
+`;
             download(txt, `wallet_${address}.txt`);
         });
 
-        // Export JSON
+        // JSON EXPORT
         dlJson.addEventListener("click", async () => {
             const pwd = prompt("Password:");
             if (!pwd) return;
@@ -159,23 +176,15 @@ Mnemonic: ${mnemonic}
             if (span.textContent.includes("•••")) {
                 span.textContent = privateKey;
             } else {
-                span.textContent = "•••••••••••••••••••• (hidden)";
+                span.textContent = "••••••••••••••••••• (hidden)";
             }
         });
-
-        // Append buttons
-        box.appendChild(qrBtn);
-        box.appendChild(copyAddr);
-        box.appendChild(copyPk);
-        box.appendChild(dlTxt);
-        box.appendChild(dlJson);
-        box.appendChild(hidePk);
 
         resultArea.appendChild(box);
     }
 });
 
-// Download helper
+/* --- DOWNLOAD HELPER --- */
 function download(content, filename) {
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -188,7 +197,7 @@ function download(content, filename) {
     URL.revokeObjectURL(url);
 }
 
-// Example QR
+/* --- EXAMPLE GENERATOR --- */
 genExample.addEventListener("click", () => {
     const w = ethers.Wallet.createRandom();
     qrcodeEl.style.display = "flex";
@@ -200,7 +209,7 @@ genExample.addEventListener("click", () => {
     });
 });
 
-// Copy Example QR
+/* --- COPY SAMPLE ADDRESS --- */
 copyExample.addEventListener("click", () => {
     const img = qrcodeEl.querySelector("img");
     if (!img) return alert("Generate an example first!");
