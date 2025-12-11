@@ -5,43 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ARC Offline Wallet Generator</title>
 
-    <!-- Stylesheet -->
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="style.css" />
 
-    <!-- Load required libraries (CDN first, guaranteed to load before script.js) -->
-    <script>
-        function loadScript(src, callback) {
-            const s = document.createElement("script");
-            s.src = src;
-            s.onload = callback;
-            s.onerror = () => console.error("Failed to load:", src);
-            document.head.appendChild(s);
-        }
+    <!-- Load QRCode library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-        // Load ethers first (required for wallet generation)
-        loadScript("https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js", () => {
-            console.log("ethers.js loaded");
-        });
-
-        // Load QRCode library
-        loadScript("https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js", () => {
-            console.log("QRCode library loaded");
-        });
+    <!-- 
+        Load ethers.js as ES module (required for Vercel)
+        This guarantees ethers is available BEFORE script.js runs 
+    -->
+    <script type="module">
+        import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
+        window.ethers = ethers; // Expose to the global scope
+        console.log("ethers.js loaded (ESM)");
     </script>
 </head>
 
 <body>
+
     <div class="wrap">
 
-        <!-- Left Panel (Wallet Generator) -->
+        <!-- Left Panel -->
         <div class="card main">
             <h1>ARC Offline Wallet Generator</h1>
+
             <p class="lead">
-                Secure ARC wallet generation directly in your browser.<br>
+                Secure ARC wallet generation directly in your browser.  
                 <strong>No data is ever uploaded.</strong>
             </p>
 
-            <!-- Wallet Settings -->
             <div class="row">
                 <div class="col">
                     <label>Number of wallets</label>
@@ -51,43 +44,39 @@
                 <div class="col">
                     <label>Derive from mnemonic?</label>
                     <select id="deriveMode">
-                        <option value="no">No — generate randomly</option>
-                        <option value="fromMnemonic">Yes — use provided mnemonic</option>
+                        <option value="no">No – generate randomly</option>
+                        <option value="fromMnemonic">Yes – use provided mnemonic</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Mnemonic Derivation Options -->
             <div id="mnemonicBox" class="col" style="display:none;">
                 <label>Mnemonic phrase:</label>
-                <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic phrase"></textarea>
+                <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic"></textarea>
 
                 <label>Derivation Path Template</label>
                 <input id="derivationPath" type="text" value="m/44'/60'/0'/0/{index}">
                 <span class="small">Use {index} to derive multiple wallets.</span>
             </div>
 
-            <!-- Buttons -->
             <div class="row buttons">
                 <button id="generateBtn">🔐 Generate Wallets</button>
                 <button id="clearBtn" class="ghost">Clear</button>
                 <button id="downloadAllBtn" class="ghost">📥 Download All (.txt)</button>
             </div>
 
-            <!-- Output List -->
             <div id="resultArea" class="result"></div>
 
             <footer>
                 <div class="small danger"><strong>Warning:</strong> Never share your private keys.</div>
-                <div class="small">
-                    Works fully offline after first load (cached CDN scripts).
-                </div>
+                <div class="small">Works fully offline after initial load (CDN cached).</div>
             </footer>
         </div>
 
-        <!-- Right Panel (QR Preview & Utilities) -->
+        <!-- Right Panel -->
         <div class="card side">
             <h2>Preview / Utilities</h2>
+
             <div id="qrcode" class="qrcode">QR</div>
 
             <div class="actions">
@@ -104,11 +93,13 @@
                     <li>Custom derivation paths</li>
                 </ul>
             </div>
+
         </div>
 
     </div>
 
-    <!-- Main App Logic -->
+    <!-- Application Logic (executes AFTER ethers.js is loaded) -->
     <script src="script.js"></script>
+
 </body>
 </html>
