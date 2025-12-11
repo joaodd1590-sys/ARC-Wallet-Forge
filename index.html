@@ -11,22 +11,20 @@
     <!-- QRCode library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <!-- 
-        Load ethers.js using ES Modules (works 100% on Vercel)
-        Makes ethers available globally as window.ethers
-    -->
+    <!-- Ethers.js (ES Module, required for Vercel) -->
     <script type="module">
         import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
         window.ethers = ethers;
-        console.log("ethers.js loaded successfully (ES Module)");
+        console.log("ethers.js loaded successfully");
     </script>
 </head>
 
 <body>
 
+    <!-- MAIN LAYOUT -->
     <div class="wrap">
-        
-        <!-- LEFT SIDE — WALLET GENERATOR -->
+
+        <!-- LEFT SIDE -->
         <div class="card main">
             <h1>ARC Offline Wallet Generator</h1>
             <p class="lead">
@@ -72,7 +70,7 @@
             </footer>
         </div>
 
-        <!-- RIGHT SIDE — QR PREVIEW -->
+        <!-- RIGHT SIDE -->
         <div class="card side">
             <h2>Preview / Utilities</h2>
 
@@ -94,9 +92,9 @@
             </div>
         </div>
 
-    </div>
+    </div> <!-- END WRAP -->
 
-    <!-- FOOTER -->
+    <!-- GLOBAL FOOTER (OUTSIDE THE LAYOUT WRAP!) -->
     <div class="footer">
         <div class="footer-icons">
             <a href="https://github.com/joaodd1590-sys/ARC-Wallet-Forge" target="_blank">🐙</a>
@@ -108,7 +106,7 @@
         © 2025 ARC Wallet Forge. All rights reserved.
     </div>
 
-    <!-- MAIN SCRIPT -->
+    <!-- MAIN LOGIC -->
     <script src="script.js"></script>
 </body>
 </html>
