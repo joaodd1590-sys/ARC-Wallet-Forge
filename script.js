@@ -1,4 +1,3 @@
-// Helper
 function $(id) { return document.getElementById(id); }
 
 // Elements
@@ -15,27 +14,27 @@ const qrcodeEl = $("qrcode");
 const genExample = $("genExample");
 const copyExample = $("copyExample");
 
-// Hide QR initially
-qrcodeEl.style.display = "none";
+// Copy animation handler
+function animateCopy(btn) {
+    btn.classList.add("copy-animate");
+    setTimeout(() => btn.classList.remove("copy-animate"), 350);
+}
 
-// Toggle mnemonic
+// Toggle mnemonic box
 deriveMode.addEventListener("change", () => {
     mnemonicBox.style.display =
         deriveMode.value === "fromMnemonic" ? "block" : "none";
 });
 
-// Clear data
+// Clear page
 clearBtn.addEventListener("click", () => {
     resultArea.innerHTML = "";
     qrcodeEl.style.display = "none";
 });
 
-// MAIN GENERATOR
+// MAIN WALLET GENERATION
 generateBtn.addEventListener("click", async () => {
-    if (!window.ethers) {
-        alert("Ethers.js not loaded.");
-        return;
-    }
+    if (!window.ethers) return alert("Ethers.js not loaded.");
 
     const count = Math.min(1000, Math.max(1, Number(countInput.value)));
     resultArea.innerHTML = "";
@@ -53,6 +52,7 @@ generateBtn.addEventListener("click", async () => {
     }
 
     for (let i = 0; i < count; i++) {
+
         let wallet;
 
         if (baseMnemonic) {
@@ -69,29 +69,31 @@ generateBtn.addEventListener("click", async () => {
         const privateKey = wallet.privateKey;
         const mnemonic = wallet.mnemonic?.phrase || baseMnemonic || "";
 
-        const card = document.createElement("div");
-        card.className = "out";
+        const box = document.createElement("div");
+        box.className = "out";
 
-        card.innerHTML = `
+        box.innerHTML = `
 Wallet ${i + 1}
 Address: ${address}
-Mnemonic: ${mnemonic}
+
+Mnemonic:
+${mnemonic}
 
 Public Key:
 ${publicKey}
 
 Private Key:
 <span id="pk_${i}">${privateKey}</span>
-`;
+        `;
 
-        // Buttons
+        // Create buttons
         const qrBtn = document.createElement("button");
         qrBtn.textContent = "QR";
         qrBtn.className = "ghost";
 
-        const copyAddress = document.createElement("button");
-        copyAddress.textContent = "Copy Address";
-        copyAddress.className = "ghost";
+        const copyAddr = document.createElement("button");
+        copyAddr.textContent = "Copy Address";
+        copyAddr.className = "ghost";
 
         const copyPk = document.createElement("button");
         copyPk.textContent = "Copy Private Key";
@@ -109,25 +111,27 @@ Private Key:
         hidePk.textContent = "Hide";
         hidePk.className = "ghost";
 
-        // QR generator
+        // QR
         qrBtn.addEventListener("click", () => {
             qrcodeEl.style.display = "flex";
             qrcodeEl.innerHTML = "";
             new QRCode(qrcodeEl, {
                 text: address,
-                width: 180,
-                height: 180,
+                width: 200,
+                height: 200
             });
         });
 
-        // Copy address
-        copyAddress.addEventListener("click", () => {
+        // Copy Address
+        copyAddr.addEventListener("click", () => {
             navigator.clipboard.writeText(address);
+            animateCopy(copyAddr);
         });
 
-        // Copy private key
+        // Copy PK
         copyPk.addEventListener("click", () => {
             navigator.clipboard.writeText(privateKey);
+            animateCopy(copyPk);
         });
 
         // Download TXT
@@ -137,15 +141,14 @@ Address: ${address}
 Public Key: ${publicKey}
 Private Key: ${privateKey}
 Mnemonic: ${mnemonic}
-`;
+            `;
             download(txt, `wallet_${address}.txt`);
         });
 
-        // Export Keystore JSON
+        // Export JSON
         dlJson.addEventListener("click", async () => {
-            const pwd = prompt("Password for JSON encryption:");
+            const pwd = prompt("Password:");
             if (!pwd) return;
-
             const json = await wallet.encrypt(pwd);
             download(json, `keystore_${address}.json`);
         });
@@ -156,39 +159,20 @@ Mnemonic: ${mnemonic}
             if (span.textContent.includes("•••")) {
                 span.textContent = privateKey;
             } else {
-                span.textContent = "•••••••••••••••••• (hidden)";
+                span.textContent = "•••••••••••••••••••• (hidden)";
             }
         });
 
-        card.appendChild(qrBtn);
-        card.appendChild(copyAddress);
-        card.appendChild(copyPk);
-        card.appendChild(dlTxt);
-        card.appendChild(dlJson);
-        card.appendChild(hidePk);
+        // Append buttons
+        box.appendChild(qrBtn);
+        box.appendChild(copyAddr);
+        box.appendChild(copyPk);
+        box.appendChild(dlTxt);
+        box.appendChild(dlJson);
+        box.appendChild(hidePk);
 
-        resultArea.appendChild(card);
+        resultArea.appendChild(box);
     }
-});
-
-// BUTTON: Example QR
-genExample.addEventListener("click", () => {
-    const w = ethers.Wallet.createRandom();
-    qrcodeEl.style.display = "flex";
-    qrcodeEl.innerHTML = "";
-    new QRCode(qrcodeEl, {
-        text: w.address,
-        width: 180,
-        height: 180
-    });
-});
-
-// BUTTON: Copy Example Address
-copyExample.addEventListener("click", () => {
-    const img = qrcodeEl.querySelector("img");
-    if (!img) return alert("Generate an example first!");
-
-    navigator.clipboard.writeText(img.src);
 });
 
 // Download helper
@@ -203,3 +187,23 @@ function download(content, filename) {
 
     URL.revokeObjectURL(url);
 }
+
+// Example QR
+genExample.addEventListener("click", () => {
+    const w = ethers.Wallet.createRandom();
+    qrcodeEl.style.display = "flex";
+    qrcodeEl.innerHTML = "";
+    new QRCode(qrcodeEl, {
+        text: w.address,
+        width: 200,
+        height: 200
+    });
+});
+
+// Copy Example QR
+copyExample.addEventListener("click", () => {
+    const img = qrcodeEl.querySelector("img");
+    if (!img) return alert("Generate an example first!");
+    navigator.clipboard.writeText(img.src);
+    animateCopy(copyExample);
+});
