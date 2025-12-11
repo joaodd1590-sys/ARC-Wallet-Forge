@@ -11,7 +11,7 @@
     <!-- QRCode library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <!-- Ethers.js (ES Module for Vercel compatibility) -->
+    <!-- Ethers.js -->
     <script type="module">
         import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
         window.ethers = ethers;
@@ -20,11 +20,11 @@
 
 <body>
 
-    <!-- MAIN LAYOUT -->
     <div class="wrap">
 
-        <!-- LEFT SIDE -->
+        <!-- LEFT PANEL -->
         <div class="card main">
+
             <h1>ARC Offline Wallet Generator</h1>
             <p class="lead">
                 Secure ARC wallet generation directly in your browser.
@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <!-- Mnemonic container -->
+            <!-- Mnemonic Area -->
             <div id="mnemonicBox" class="col" style="display:none;">
                 <label>Mnemonic phrase:</label>
                 <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic phrase"></textarea>
@@ -56,29 +56,29 @@
                 <span class="small">Use {index} to derive multiple wallets.</span>
             </div>
 
-            <!-- Action buttons -->
             <div class="row buttons">
                 <button id="generateBtn">🔐 Generate Wallets</button>
                 <button id="clearBtn" class="ghost">Clear</button>
                 <button id="downloadAllBtn" class="ghost">📥 Download All (.txt)</button>
             </div>
 
-            <!-- Display area -->
             <div id="resultArea" class="result"></div>
 
             <footer>
                 <div class="small danger"><strong>Warning:</strong> Never share your private keys.</div>
                 <div class="small">Works fully offline after initial CDN load (browser cache).</div>
             </footer>
+
         </div>
 
-        <!-- RIGHT SIDE -->
+        <!-- RIGHT PANEL -->
         <div class="card side">
+
             <h2>Preview / Utilities</h2>
 
             <div id="qrcode" class="qrcode"></div>
 
-            <div class="actions qrButtons">
+            <div class="actions">
                 <button id="genExample" class="ghost">Generate Example</button>
                 <button id="copyExample" class="ghost">Copy Sample Address</button>
             </div>
@@ -92,12 +92,14 @@
                     <li>Custom derivation paths</li>
                 </ul>
             </div>
+
         </div>
 
-    </div> <!-- END WRAP -->
+    </div>
 
     <!-- FOOTER -->
     <div class="footer">
+
         <div class="footer-icons">
 
             <!-- GitHub SVG -->
@@ -136,7 +138,8 @@
         © 2025 ARC Wallet Forge. All rights reserved.
     </div>
 
-    <!-- Main Logic -->
+    <!-- FULL SCRIPT -->
     <script src="script.js"></script>
+
 </body>
 </html>
