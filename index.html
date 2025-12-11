@@ -5,31 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ARC Offline Wallet Generator</title>
 
-    <!-- Main Stylesheet -->
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css" />
 
-    <!-- Load QRCode library -->
+    <!-- QRCode library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <!-- 
-        Load ethers.js as ES module (required for Vercel)
-        This guarantees ethers is available BEFORE script.js runs 
+        Load ethers.js using ES Modules (works 100% on Vercel)
+        Makes ethers available globally as window.ethers
     -->
     <script type="module">
         import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
-        window.ethers = ethers; // Expose to the global scope
-        console.log("ethers.js loaded (ESM)");
+        window.ethers = ethers;
+        console.log("ethers.js loaded successfully (ES Module)");
     </script>
 </head>
 
 <body>
 
     <div class="wrap">
-
-        <!-- Left Panel -->
+        
+        <!-- LEFT SIDE — WALLET GENERATOR -->
         <div class="card main">
             <h1>ARC Offline Wallet Generator</h1>
-
             <p class="lead">
                 Secure ARC wallet generation directly in your browser.  
                 <strong>No data is ever uploaded.</strong>
@@ -52,7 +51,7 @@
 
             <div id="mnemonicBox" class="col" style="display:none;">
                 <label>Mnemonic phrase:</label>
-                <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic"></textarea>
+                <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic phrase"></textarea>
 
                 <label>Derivation Path Template</label>
                 <input id="derivationPath" type="text" value="m/44'/60'/0'/0/{index}">
@@ -69,11 +68,11 @@
 
             <footer>
                 <div class="small danger"><strong>Warning:</strong> Never share your private keys.</div>
-                <div class="small">Works fully offline after initial load (CDN cached).</div>
+                <div class="small">Works fully offline after initial CDN load (browser cache).</div>
             </footer>
         </div>
 
-        <!-- Right Panel -->
+        <!-- RIGHT SIDE — QR PREVIEW -->
         <div class="card side">
             <h2>Preview / Utilities</h2>
 
@@ -93,13 +92,23 @@
                     <li>Custom derivation paths</li>
                 </ul>
             </div>
-
         </div>
 
     </div>
 
-    <!-- Application Logic (executes AFTER ethers.js is loaded) -->
-    <script src="script.js"></script>
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="footer-icons">
+            <a href="https://github.com/joaodd1590-sys/ARC-Wallet-Forge" target="_blank">🐙</a>
+            <a href="https://x.com/cj54475427" target="_blank">✖</a>
+        </div>
 
+        Built by João Carlos · ARC Ecosystem Community 💙  
+        <br>
+        © 2025 ARC Wallet Forge. All rights reserved.
+    </div>
+
+    <!-- MAIN SCRIPT -->
+    <script src="script.js"></script>
 </body>
 </html>
