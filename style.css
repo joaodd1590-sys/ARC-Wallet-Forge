@@ -10,7 +10,6 @@
 
 * { box-sizing: border-box; }
 
-/* BODY */
 body {
     margin: 0;
     background: linear-gradient(180deg, var(--bg), #04121a);
@@ -24,19 +23,16 @@ body {
     padding: 22px;
 }
 
-/* LAYOUT */
+/* --- CORE LAYOUT --- */
 .wrap {
     width: 100%;
     max-width: 1100px;
-
     display: grid;
     grid-template-columns: 1fr 360px;
     gap: 20px;
-
     margin-bottom: 40px;
 }
 
-/* CARD */
 .card {
     background: var(--card);
     padding: 20px;
@@ -45,18 +41,16 @@ body {
     border: 1px solid rgba(255,255,255,0.04);
 }
 
-h1 { margin-bottom: 10px; font-size: 26px; }
-h2 { margin-bottom: 10px; }
+/* --- TEXT --- */
+h1 { margin: 0 0 10px; font-size: 26px; }
+h2 { margin: 0 0 10px; }
 
-.lead {
-    color: var(--muted);
-    margin-bottom: 16px;
-}
+.lead { color: var(--muted); margin-bottom: 16px; }
 
+/* --- FORMS --- */
 .row { display: flex; gap: 12px; }
 .col { display: flex; flex-direction: column; gap: 8px; }
 
-/* INPUTS */
 input, textarea, select {
     background: var(--glass);
     border: 1px solid rgba(255,255,255,0.15);
@@ -70,7 +64,7 @@ select option {
     color: white !important;
 }
 
-/* BUTTONS */
+/* --- BUTTONS --- */
 .buttons {
     display: flex;
     gap: 10px;
@@ -86,6 +80,7 @@ button {
     background: var(--accent);
     color: white;
     transition: 0.15s ease;
+    white-space: nowrap;
 }
 
 button:hover {
@@ -102,10 +97,21 @@ button.ghost {
     border: 1px solid rgba(255,255,255,0.15);
 }
 
-button.ghost:hover {
-    background: rgba(255,255,255,0.08);
+/* --- BUTTON GROUP INSIDE EACH WALLET CARD --- */
+.btn-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 
+.btn-row button {
+    font-size: 13px;
+    padding: 8px 12px;
+    white-space: nowrap;
+}
+
+/* --- RESULT CARDS --- */
 .result {
     display: grid;
     gap: 14px;
@@ -124,9 +130,9 @@ button.ghost:hover {
     word-break: break-all;
 }
 
-/* QR */
+/* --- QR CODE --- */
 .qrcode {
-    background: #fff;
+    background: #ffffff;
     padding: 10px;
     border-radius: 10px;
     width: 200px;
@@ -135,11 +141,11 @@ button.ghost:hover {
     margin: 22px auto;
 }
 
-/* TEXT */
+/* --- TYPOGRAPHY --- */
 .small { font-size: 13px; color: var(--muted); }
 .danger { color: #ff6f6f; font-weight: bold; }
 
-/* FOOTER */
+/* --- FOOTER --- */
 .footer {
     text-align: center;
     margin-top: 40px;
@@ -163,7 +169,7 @@ button.ghost:hover {
     opacity: 0.7;
 }
 
-/* COPY SUCCESS ANIMATION */
+/* --- COPY SUCCESS ANIMATION --- */
 @keyframes copySuccess {
     0% { transform: scale(1); background: var(--accent); }
     30% { transform: scale(0.93); background: #22c55e; }
@@ -174,6 +180,9 @@ button.ghost:hover {
     animation: copySuccess 0.35s ease-out;
 }
 
+/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 950px) {
-    .wrap { grid-template-columns: 1fr; }
+    .wrap {
+        grid-template-columns: 1fr;
+    }
 }
