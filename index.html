@@ -11,7 +11,7 @@
     <!-- QRCode library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <!-- Ethers.js (ES Module, required for Vercel) -->
+    <!-- Ethers.js (ES Module for Vercel compatibility) -->
     <script type="module">
         import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
         window.ethers = ethers;
@@ -47,6 +47,7 @@
                 </div>
             </div>
 
+            <!-- Mnemonic Options -->
             <div id="mnemonicBox" class="col" style="display:none;">
                 <label>Mnemonic phrase:</label>
                 <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic phrase"></textarea>
@@ -56,12 +57,14 @@
                 <span class="small">Use {index} to derive multiple wallets.</span>
             </div>
 
+            <!-- Buttons -->
             <div class="row buttons">
                 <button id="generateBtn">🔐 Generate Wallets</button>
                 <button id="clearBtn" class="ghost">Clear</button>
                 <button id="downloadAllBtn" class="ghost">📥 Download All (.txt)</button>
             </div>
 
+            <!-- Wallet Display -->
             <div id="resultArea" class="result"></div>
 
             <footer>
@@ -74,7 +77,7 @@
         <div class="card side">
             <h2>Preview / Utilities</h2>
 
-            <div id="qrcode" class="qrcode">QR</div>
+            <div id="qrcode" class="qrcode"></div>
 
             <div class="actions">
                 <button id="genExample" class="ghost">Generate Example</button>
@@ -94,7 +97,7 @@
 
     </div> <!-- END WRAP -->
 
-    <!-- GLOBAL FOOTER (OUTSIDE THE LAYOUT WRAP!) -->
+    <!-- GLOBAL FOOTER -->
     <div class="footer">
         <div class="footer-icons">
             <a href="https://github.com/joaodd1590-sys/ARC-Wallet-Forge" target="_blank">🐙</a>
