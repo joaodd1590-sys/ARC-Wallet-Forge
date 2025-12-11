@@ -1,11 +1,6 @@
 /* =====================================================
-   ARC Offline Wallet Generator
-   Author: (you)
-   Description:
-   - Generates ARC wallets fully offline
-   - Supports mnemonic derivation
-   - Supports custom derivation paths
-   - Exports encrypted keystore JSON (ethers v5)
+   ARC Wallet Forge - Main Script
+   All logic for wallet generation and UI handling
    ===================================================== */
 
 function $(id) { return document.getElementById(id); }
@@ -22,7 +17,10 @@ const derivationPathInput = $("derivationPath");
 const downloadAllBtn = $("downloadAllBtn");
 const qrcodeEl = $("qrcode");
 
-// Toggle mnemonic options
+// Hide QR code by default
+qrcodeEl.style.display = "none";
+
+// Toggle mnemonic fields
 deriveMode.addEventListener("change", () => {
     mnemonicBox.style.display =
         deriveMode.value === "fromMnemonic" ? "block" : "none";
@@ -31,59 +29,56 @@ deriveMode.addEventListener("change", () => {
 // Clear UI
 clearBtn.addEventListener("click", () => {
     resultArea.innerHTML = "";
-    qrcodeEl.innerHTML = "QR";
+    qrcodeEl.style.display = "none";
 });
 
-// Main generator
+// Generate Wallets
 generateBtn.addEventListener("click", async () => {
 
-    if (typeof ethers === "undefined") {
-        alert("ethers.js not loaded.");
+    if (!window.ethers) {
+        alert("ethers.js failed to load.");
         return;
     }
 
-    const count = Math.max(1, Math.min(1000, Number(countInput.value) || 1));
+    const count = Math.min(1000, Math.max(1, Number(countInput.value)));
     resultArea.innerHTML = "";
-    qrcodeEl.innerHTML = "QR";
+    qrcodeEl.style.display = "none";
 
-    let mnemonicBase = null;
+    let baseMnemonic = null;
 
-    // Derivation mode using seed phrase
     if (deriveMode.value === "fromMnemonic") {
-        mnemonicBase = mnemonicInput.value.trim();
+        baseMnemonic = mnemonicInput.value.trim();
 
-        if (!mnemonicBase) {
-            alert("Please enter a mnemonic phrase.");
-            return;
-        }
+        if (!baseMnemonic) return alert("Please enter a mnemonic phrase.");
 
-        if (!ethers.utils.isValidMnemonic(mnemonicBase)) {
-            if (!confirm("Mnemonic seems invalid. Continue anyway?")) return;
+        if (!ethers.utils.isValidMnemonic(baseMnemonic)) {
+            if (!confirm("Mnemonic appears invalid. Continue anyway?")) return;
         }
     }
 
-    // Generate N wallets
     for (let i = 0; i < count; i++) {
 
         let wallet;
 
-        if (mnemonicBase) {
+        // Derive from mnemonic
+        if (baseMnemonic) {
             const path = derivationPathInput.value.replace("{index}", i);
-            const node = ethers.utils.HDNode.fromMnemonic(mnemonicBase).derivePath(path);
+            const node = ethers.utils.HDNode.fromMnemonic(baseMnemonic).derivePath(path);
             wallet = new ethers.Wallet(node.privateKey);
-        } else {
+        } 
+        // Generate random wallet
+        else {
             wallet = ethers.Wallet.createRandom();
         }
 
         const address = wallet.address;
         const publicKey = wallet._signingKey().publicKey;
         const privateKey = wallet.privateKey;
-        const mnemonic = wallet.mnemonic?.phrase || mnemonicBase || "";
+        const mnemonic = wallet.mnemonic?.phrase || baseMnemonic || "";
 
-        // Build wallet card
+        // Build wallet output card
         const card = document.createElement("div");
         card.className = "out";
-
         card.innerHTML = `
             <strong>Wallet ${i + 1}</strong><br>
             Address: ${address}<br>
@@ -104,25 +99,27 @@ generateBtn.addEventListener("click", async () => {
 
         resultArea.appendChild(card);
 
-        // --- ACTION HANDLERS ---
+        // EVENTS
 
-        // QR code preview
+        // Show QR only when clicking the button
         card.querySelector(".btn-qr").addEventListener("click", () => {
+            qrcodeEl.style.display = "flex";
             qrcodeEl.innerHTML = "";
-            new QRCode(qrcodeEl, { text: address, width: 200, height: 200 });
+            new QRCode(qrcodeEl, {
+                text: address,
+                width: 200,
+                height: 200
+            });
         });
 
-        // Copy address
         card.querySelector(".btn-copy").addEventListener("click", () => {
             navigator.clipboard.writeText(address);
         });
 
-        // Copy Private Key
         card.querySelector(".btn-copy-pk").addEventListener("click", () => {
             navigator.clipboard.writeText(privateKey);
         });
 
-        // Download .txt export
         card.querySelector(".btn-download").addEventListener("click", () => {
             const text = `
 Address: ${address}
@@ -133,23 +130,21 @@ Mnemonic: ${mnemonic}
             downloadFile(text, `wallet_${address}.txt`);
         });
 
-        // Export keystore JSON
         card.querySelector(".btn-download-json").addEventListener("click", async () => {
-            const password = prompt("Enter a password for JSON encryption:");
-            if (!password) return;
+            const pwd = prompt("Enter password for JSON encryption:");
+            if (!pwd) return;
 
             try {
-                const json = await wallet.encrypt(password);
+                const json = await wallet.encrypt(pwd);
                 downloadFile(json, `keystore_${address}.json`);
             } catch (err) {
                 alert("Error: " + err.message);
             }
         });
 
-        // Hide private key visually
         card.querySelector(".btn-hidepk").addEventListener("click", () => {
             const pkEl = $("pk_" + i);
-            if (pkEl.textContent.includes("•")) {
+            if (pkEl.textContent.includes("•••")) {
                 pkEl.textContent = privateKey;
             } else {
                 pkEl.textContent = "•••••••••••• (hidden)";
@@ -158,27 +153,26 @@ Mnemonic: ${mnemonic}
     }
 });
 
-// Download all wallets in .txt
+// Download all wallets
 downloadAllBtn.addEventListener("click", () => {
     const items = Array.from(resultArea.children);
-
     if (items.length === 0) return alert("No wallets generated.");
 
     let txt = "";
-    items.forEach((c, i) => {
-        txt += c.textContent + "\n\n";
-    });
+    items.forEach((c) => txt += c.textContent + "\n\n");
 
     downloadFile(txt, "wallets_all.txt");
 });
 
 // Utility: download file
-function downloadFile(text, filename) {
-    const blob = new Blob([text], { type: "text/plain" });
+function downloadFile(content, filename) {
+    const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
+
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     a.click();
+
     URL.revokeObjectURL(url);
 }
