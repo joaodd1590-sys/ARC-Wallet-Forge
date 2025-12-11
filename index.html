@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARC Offline Wallet Generator</title>
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div class="wrap">
+
+        <!-- Left panel – generator -->
+        <div class="card main">
+            <h1>ARC Offline Wallet Generator</h1>
+            <p class="lead">
+                Generate ARC wallets securely inside your browser.  
+                <strong>No data is ever uploaded.</strong>
+            </p>
+
+            <!-- Wallet generation settings -->
+            <div class="row">
+                <div class="col">
+                    <label>Number of wallets</label>
+                    <input id="count" type="number" min="1" max="1000" value="1" />
+                </div>
+
+                <div class="col">
+                    <label>Derive from mnemonic?</label>
+                    <select id="deriveMode">
+                        <option value="no">No — generate randomly</option>
+                        <option value="fromMnemonic">Yes — use provided mnemonic</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Mnemonic & derivation settings -->
+            <div id="mnemonicBox" class="col" style="display:none;">
+                <label>Mnemonic phrase:</label>
+                <textarea id="mnemonicInput" rows="2" placeholder="enter your seed phrase"></textarea>
+
+                <label>Derivation path template</label>
+                <input id="derivationPath" type="text" value="m/44'/60'/0'/0/{index}" />
+                <span class="small">Use {index} placeholder to generate multiple wallets.</span>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="row buttons">
+                <button id="generateBtn">🔐 Generate Wallets</button>
+                <button id="clearBtn" class="ghost">Clear</button>
+                <button id="downloadAllBtn" class="ghost">📥 Download All (.txt)</button>
+            </div>
+
+            <!-- Output area -->
+            <div id="resultArea" class="result"></div>
+
+            <footer>
+                <div class="small danger"><strong>Warning:</strong> Never share your private keys.</div>
+                <div class="small">
+                    For full offline usage, add <code>ethers.min.js</code> and <code>qrcode.min.js</code> inside <code>/libs</code>.
+                </div>
+            </footer>
+        </div>
+
+        <!-- Right panel – QR preview -->
+        <div class="card side">
+            <h2>Preview / Utilities</h2>
+            <div id="qrcode" class="qrcode">QR</div>
+
+            <div class="actions">
+                <button id="genExample" class="ghost">Generate Example Wallet</button>
+                <button id="copyExample" class="ghost">Copy Example Address</button>
+            </div>
+
+            <div class="small features">
+                <strong>Features:</strong>
+                <ul>
+                    <li>Offline wallet generation</li>
+                    <li>Mnemonic + Private Key + Public Key</li>
+                    <li>Export Keystore (JSON encrypted)</li>
+                    <li>Custom derivation path</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Local libs with CDN fallback -->
+    <script>
+        function loadScript(src) {
+            const s = document.createElement("script");
+            s.src = src;
+            document.head.appendChild(s);
+        }
+
+        // Try loading offline versions first
+        loadScript("libs/ethers.min.js");
+        loadScript("libs/qrcode.min.js");
+
+        // Fallback after 300ms if not loaded
+        setTimeout(() => {
+            if (typeof ethers === "undefined")
+                loadScript("https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js");
+
+            if (typeof QRCode === "undefined")
+                loadScript("https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js");
+        }, 300);
+    </script>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
