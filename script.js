@@ -1,5 +1,7 @@
+// Helper
 function $(id) { return document.getElementById(id); }
 
+// Elements
 const generateBtn = $("generateBtn");
 const clearBtn = $("clearBtn");
 const resultArea = $("resultArea");
@@ -10,26 +12,28 @@ const mnemonicInput = $("mnemonicInput");
 const derivationPathInput = $("derivationPath");
 const downloadAllBtn = $("downloadAllBtn");
 const qrcodeEl = $("qrcode");
+const genExample = $("genExample");
+const copyExample = $("copyExample");
 
+// Hide QR initially
 qrcodeEl.style.display = "none";
 
-// Toggle mnemonic field
+// Toggle mnemonic
 deriveMode.addEventListener("change", () => {
     mnemonicBox.style.display =
         deriveMode.value === "fromMnemonic" ? "block" : "none";
 });
 
-// Clear screen
+// Clear data
 clearBtn.addEventListener("click", () => {
     resultArea.innerHTML = "";
     qrcodeEl.style.display = "none";
 });
 
-// Generate wallets
+// MAIN GENERATOR
 generateBtn.addEventListener("click", async () => {
-
     if (!window.ethers) {
-        alert("ethers.js failed to load.");
+        alert("Ethers.js not loaded.");
         return;
     }
 
@@ -41,19 +45,20 @@ generateBtn.addEventListener("click", async () => {
 
     if (deriveMode.value === "fromMnemonic") {
         baseMnemonic = mnemonicInput.value.trim();
-        if (!baseMnemonic) return alert("Please enter a mnemonic phrase.");
+
+        if (!baseMnemonic) return alert("Enter mnemonic.");
         if (!ethers.utils.isValidMnemonic(baseMnemonic)) {
-            if (!confirm("Mnemonic appears invalid. Continue anyway?")) return;
+            if (!confirm("Invalid mnemonic. Continue?")) return;
         }
     }
 
     for (let i = 0; i < count; i++) {
-
         let wallet;
 
         if (baseMnemonic) {
             const path = derivationPathInput.value.replace("{index}", i);
-            const node = ethers.utils.HDNode.fromMnemonic(baseMnemonic).derivePath(path);
+            const node = ethers.utils.HDNode.fromMnemonic(baseMnemonic)
+                .derivePath(path);
             wallet = new ethers.Wallet(node.privateKey);
         } else {
             wallet = ethers.Wallet.createRandom();
@@ -68,95 +73,126 @@ generateBtn.addEventListener("click", async () => {
         card.className = "out";
 
         card.innerHTML = `
-            <strong>Wallet ${i + 1}</strong><br>
-            Address: ${address}<br>
-            Mnemonic: ${mnemonic}<br><br>
+Wallet ${i + 1}
+Address: ${address}
+Mnemonic: ${mnemonic}
 
-            <strong>Public Key:</strong><br>${publicKey}<br><br>
+Public Key:
+${publicKey}
 
-            <strong>Private Key:</strong><br>
-            <span id="pk_${i}">${privateKey}</span><br><br>
+Private Key:
+<span id="pk_${i}">${privateKey}</span>
+`;
 
-            <button class="ghost btn-qr">QR</button>
-            <button class="ghost btn-copy">Copy Address</button>
-            <button class="ghost btn-copy-pk">Copy Private Key</button>
-            <button class="ghost btn-download">Download .txt</button>
-            <button class="ghost btn-download-json">Export Keystore (JSON)</button>
-            <button class="ghost btn-hidepk">Hide</button>
-        `;
+        // Buttons
+        const qrBtn = document.createElement("button");
+        qrBtn.textContent = "QR";
+        qrBtn.className = "ghost";
 
-        resultArea.appendChild(card);
+        const copyAddress = document.createElement("button");
+        copyAddress.textContent = "Copy Address";
+        copyAddress.className = "ghost";
 
-        // Show QR only when clicked
-        card.querySelector(".btn-qr").addEventListener("click", () => {
+        const copyPk = document.createElement("button");
+        copyPk.textContent = "Copy Private Key";
+        copyPk.className = "ghost";
+
+        const dlTxt = document.createElement("button");
+        dlTxt.textContent = "Download .txt";
+        dlTxt.className = "ghost";
+
+        const dlJson = document.createElement("button");
+        dlJson.textContent = "Export Keystore (JSON)";
+        dlJson.className = "ghost";
+
+        const hidePk = document.createElement("button");
+        hidePk.textContent = "Hide";
+        hidePk.className = "ghost";
+
+        // QR generator
+        qrBtn.addEventListener("click", () => {
             qrcodeEl.style.display = "flex";
             qrcodeEl.innerHTML = "";
             new QRCode(qrcodeEl, {
                 text: address,
-                width: 200,
-                height: 200
+                width: 180,
+                height: 180,
             });
         });
 
         // Copy address
-        card.querySelector(".btn-copy").addEventListener("click", () => {
+        copyAddress.addEventListener("click", () => {
             navigator.clipboard.writeText(address);
         });
 
-        // Copy Private Key
-        card.querySelector(".btn-copy-pk").addEventListener("click", () => {
+        // Copy private key
+        copyPk.addEventListener("click", () => {
             navigator.clipboard.writeText(privateKey);
         });
 
         // Download TXT
-        card.querySelector(".btn-download").addEventListener("click", () => {
-            const text = `
+        dlTxt.addEventListener("click", () => {
+            const txt = `
 Address: ${address}
-PublicKey: ${publicKey}
-PrivateKey: ${privateKey}
+Public Key: ${publicKey}
+Private Key: ${privateKey}
 Mnemonic: ${mnemonic}
 `;
-            downloadFile(text, `wallet_${address}.txt`);
+            download(txt, `wallet_${address}.txt`);
         });
 
-        // Keystore JSON
-        card.querySelector(".btn-download-json").addEventListener("click", async () => {
-            const pwd = prompt("Enter password for JSON encryption:");
+        // Export Keystore JSON
+        dlJson.addEventListener("click", async () => {
+            const pwd = prompt("Password for JSON encryption:");
             if (!pwd) return;
 
-            try {
-                const json = await wallet.encrypt(pwd);
-                downloadFile(json, `keystore_${address}.json`);
-            } catch (err) {
-                alert("Error: " + err.message);
+            const json = await wallet.encrypt(pwd);
+            download(json, `keystore_${address}.json`);
+        });
+
+        // Hide PK
+        hidePk.addEventListener("click", () => {
+            const span = $("pk_" + i);
+            if (span.textContent.includes("•••")) {
+                span.textContent = privateKey;
+            } else {
+                span.textContent = "•••••••••••••••••• (hidden)";
             }
         });
 
-        // Hide / Show PK
-        card.querySelector(".btn-hidepk").addEventListener("click", () => {
-            const pkEl = $("pk_" + i);
-            if (pkEl.textContent.includes("•••")) {
-                pkEl.textContent = privateKey;
-            } else {
-                pkEl.textContent = "•••••••••••• (hidden)";
-            }
-        });
+        card.appendChild(qrBtn);
+        card.appendChild(copyAddress);
+        card.appendChild(copyPk);
+        card.appendChild(dlTxt);
+        card.appendChild(dlJson);
+        card.appendChild(hidePk);
+
+        resultArea.appendChild(card);
     }
 });
 
-// Download all wallets TXT
-downloadAllBtn.addEventListener("click", () => {
-    const items = Array.from(resultArea.children);
-    if (!items.length) return alert("No wallets generated.");
-
-    let txt = "";
-    items.forEach((c) => (txt += c.textContent + "\n\n"));
-
-    downloadFile(txt, "wallets_all.txt");
+// BUTTON: Example QR
+genExample.addEventListener("click", () => {
+    const w = ethers.Wallet.createRandom();
+    qrcodeEl.style.display = "flex";
+    qrcodeEl.innerHTML = "";
+    new QRCode(qrcodeEl, {
+        text: w.address,
+        width: 180,
+        height: 180
+    });
 });
 
-// File downloader
-function downloadFile(content, filename) {
+// BUTTON: Copy Example Address
+copyExample.addEventListener("click", () => {
+    const img = qrcodeEl.querySelector("img");
+    if (!img) return alert("Generate an example first!");
+
+    navigator.clipboard.writeText(img.src);
+});
+
+// Download helper
+function download(content, filename) {
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
 
