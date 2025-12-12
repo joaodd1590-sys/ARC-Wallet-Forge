@@ -1,7 +1,7 @@
 /* Helper */
 function $(id){ return document.getElementById(id) }
 
-/* Elements */
+/* Elements (may be null if IDs differ) */
 const generateBtn = $("generateBtn");
 const clearBtn = $("clearBtn");
 const resultArea = $("resultArea");
@@ -10,14 +10,30 @@ const deriveMode = $("deriveMode");
 const mnemonicBox = $("mnemonicBox");
 const mnemonicInput = $("mnemonicInput");
 const derivationPathInput = $("derivationPath");
-const qrcodeWrap = $("qrcodeWrap");
-const qrcodeEl = $("qrcode");
+let qrcodeWrap = $("qrcodeWrap"); // fallback logic below
+let qrcodeEl = $("qrcode");
 const genExample = $("genExample");
 const copyExample = $("copyExample");
 const downloadAllBtn = $("downloadAllBtn");
 
+/* Fallbacks: if qrcodeWrap not present, use qrcode element as wrapper */
+if (!qrcodeEl) {
+  // try alternative id names
+  qrcodeEl = $("qrcodeWrap") || $("qr") || null;
+}
+if (!qrcodeWrap) {
+  // If there's only a single qrcode div, use it as the wrapper
+  qrcodeWrap = qrcodeEl || null;
+}
+
 /* small state */
 let lastExampleAddress = null;
+
+/* safe DOM check */
+function safeListen(elem, event, fn){
+  if (!elem) return console.warn(`Listener skipped: element not found for ${event}`);
+  elem.addEventListener(event, fn);
+}
 
 /* animation for copy */
 function animateCopy(btn){
@@ -27,31 +43,31 @@ function animateCopy(btn){
 }
 
 /* toggle mnemonic box */
-deriveMode.addEventListener("change", ()=>{
+safeListen(deriveMode, "change", ()=>{
+  if(!mnemonicBox) return;
   mnemonicBox.style.display = deriveMode.value === "fromMnemonic" ? "block" : "none";
 });
 
 /* clear */
-clearBtn.addEventListener("click", ()=>{
-  resultArea.innerHTML = "";
-  qrcodeWrap.setAttribute("aria-hidden","true");
-  qrcodeEl.innerHTML = "";
+safeListen(clearBtn, "click", ()=>{
+  if(resultArea) resultArea.innerHTML = "";
+  if(qrcodeWrap) { qrcodeWrap.style.display = "none"; if(qrcodeEl) qrcodeEl.innerHTML = ""; }
   lastExampleAddress = null;
 });
 
 /* generate wallets */
-generateBtn.addEventListener("click", async ()=>{
+safeListen(generateBtn, "click", async ()=>{
   if(!window.ethers) return alert("Ethers.js not loaded.");
+  if(!resultArea) return alert("resultArea not found in HTML.");
 
-  const count = Math.min(1000, Math.max(1, Number(countInput.value)));
+  const count = Math.min(1000, Math.max(1, Number(countInput?.value || 1)));
   resultArea.innerHTML = "";
-  qrcodeWrap.setAttribute("aria-hidden","true");
-  qrcodeEl.innerHTML = "";
+  if(qrcodeWrap){ qrcodeWrap.style.display = "none"; if(qrcodeEl) qrcodeEl.innerHTML = ""; }
   lastExampleAddress = null;
 
   let baseMnemonic = null;
-  if(deriveMode.value === "fromMnemonic"){
-    baseMnemonic = mnemonicInput.value.trim();
+  if(deriveMode && deriveMode.value === "fromMnemonic"){
+    baseMnemonic = (mnemonicInput?.value || "").trim();
     if(!baseMnemonic) return alert("Enter mnemonic.");
     if(!ethers.utils.isValidMnemonic(baseMnemonic)){
       if(!confirm("Invalid mnemonic. Continue anyway?")) return;
@@ -61,7 +77,7 @@ generateBtn.addEventListener("click", async ()=>{
   for(let i=0;i<count;i++){
     let wallet;
     if(baseMnemonic){
-      const path = derivationPathInput.value.replace("{index}",i);
+      const path = (derivationPathInput?.value || "m/44'/60'/0'/0/{index}").replace("{index}",i);
       const node = ethers.utils.HDNode.fromMnemonic(baseMnemonic).derivePath(path);
       wallet = new ethers.Wallet(node.privateKey);
     } else {
@@ -105,24 +121,27 @@ Private Key:
 
     /* logic */
     qrBtn.addEventListener("click", ()=>{
-      // show QR for this address
+      if(!qrcodeEl || !qrcodeWrap) return alert("QR container missing.");
       qrcodeEl.innerHTML = "";
-      qrcodeWrap.setAttribute("aria-hidden","false");
-      // center QR by recreating inside qrcodeEl
-      new QRCode(qrcodeEl, { text: address, width:168, height:168, correctLevel: QRCode.CorrectLevel.H });
-      // scroll on small screens to preview
+      qrcodeWrap.style.display = "flex";
+      // create a clean QR (avoid using library-specific extra options)
+      try {
+        new QRCode(qrcodeEl, { text: address, width:168, height:168 });
+      } catch (err) {
+        console.error("QRCode error:", err);
+      }
       if(window.innerWidth <= 700){
         qrcodeWrap.scrollIntoView({behavior:"smooth", block:"center"});
       }
     });
 
     copyAddr.addEventListener("click", ()=>{
-      navigator.clipboard.writeText(address);
+      navigator.clipboard.writeText(address).catch(()=>{});
       animateCopy(copyAddr);
     });
 
     copyPk.addEventListener("click", ()=>{
-      navigator.clipboard.writeText(privateKey);
+      navigator.clipboard.writeText(privateKey).catch(()=>{});
       animateCopy(copyPk);
     });
 
@@ -132,10 +151,15 @@ Private Key:
     });
 
     dlJson.addEventListener("click", async ()=>{
-      const pwd = prompt("Password to encrypt keystore:");
-      if(!pwd) return;
-      const json = await wallet.encrypt(pwd);
-      download(json, `keystore_${address}.json`);
+      try {
+        const pwd = prompt("Password to encrypt keystore:");
+        if(!pwd) return;
+        const json = await wallet.encrypt(pwd);
+        download(json, `keystore_${address}.json`);
+      } catch(err){
+        console.error(err);
+        alert("Error encrypting keystore: " + (err.message||err));
+      }
     });
 
     hidePk.addEventListener("click", ()=>{
@@ -153,25 +177,31 @@ Private Key:
 });
 
 /* generate example (in preview) */
-genExample.addEventListener("click", ()=>{
+safeListen(genExample, "click", ()=>{
   if(!window.ethers) return alert("Ethers.js not loaded.");
   const w = ethers.Wallet.createRandom();
   lastExampleAddress = w.address;
+  if(!qrcodeEl || !qrcodeWrap) return alert("QR container missing.");
   qrcodeEl.innerHTML = "";
-  qrcodeWrap.setAttribute("aria-hidden","false");
-  new QRCode(qrcodeEl, { text: lastExampleAddress, width:168, height:168, correctLevel: QRCode.CorrectLevel.H });
+  qrcodeWrap.style.display = "flex";
+  try {
+    new QRCode(qrcodeEl, { text: lastExampleAddress, width:168, height:168 });
+  } catch(err) {
+    console.error("QRCode error:", err);
+  }
   if(window.innerWidth <=700) qrcodeWrap.scrollIntoView({behavior:"smooth", block:"center"});
 });
 
 /* copy sample */
-copyExample.addEventListener("click", ()=>{
+safeListen(copyExample, "click", ()=>{
   if(!lastExampleAddress) return alert("Generate an example first!");
-  navigator.clipboard.writeText(lastExampleAddress);
+  navigator.clipboard.writeText(lastExampleAddress).catch(()=>{});
   animateCopy(copyExample);
 });
 
 /* download all */
-downloadAllBtn.addEventListener("click", ()=>{
+safeListen(downloadAllBtn, "click", ()=>{
+  if(!resultArea) return alert("resultArea not found.");
   const cards = Array.from(resultArea.children).filter(c=>c.classList.contains("out"));
   if(!cards.length) return alert("No wallets to download. Generate at least one.");
 
