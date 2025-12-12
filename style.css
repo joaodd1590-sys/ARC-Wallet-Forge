@@ -33,7 +33,7 @@ body {
     gap: 20px;
     margin-bottom: 40px;
 
-    align-items: start;
+    align-items: start;   /* 👈 FIXA ALTURA DO PREVIEW PARA NÃO ESTICAR */
 }
 
 /* --- CARDS --- */
@@ -45,14 +45,7 @@ body {
     border: 1px solid rgba(255,255,255,0.04);
 }
 
-/* --- TITLE (RESTAURADO IGUAL AO PRINT ANTIGO) --- */
-h1 {
-    margin-bottom: 10px;
-    font-size: 26px;
-    font-weight: 800;            /* mais forte */
-    letter-spacing: -0.5px;      /* estilo idêntico ao antigo */
-}
-
+h1 { margin-bottom: 10px; font-size: 26px; }
 h2 { margin-bottom: 10px; }
 
 .lead { color: var(--muted); margin-bottom: 16px; }
@@ -127,7 +120,6 @@ button.ghost {
     margin-top: 18px;
 }
 
-/* --- RESTAURADO: FONTE MONOSPACE PARA AS CHAVES --- */
 .out {
     background: rgba(255,255,255,0.02);
     border: 1px solid rgba(255,255,255,0.04);
@@ -140,21 +132,16 @@ button.ghost {
     word-break: break-all;
 }
 
-/* --- QR CODE (REESTILIZADO IGUAL AO ANTIGO BONITO) --- */
+/* --- QR CODE --- */
 .qrcode {
     background: #ffffff;
-    padding: 18px;
-    border-radius: 14px;
-    width: 220px;
-    height: 220px;
-    display: none; /* só mostra quando o JS ativa */
-
-    margin: 22px auto 30px auto;
-    border: 6px solid #fff;      /* borda branca grossa */
-    box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+    height: 200px;
     display: none;
-    justify-content: center;
-    align-items: center;
+
+    margin: 22px auto 30px auto; /* mais espaço */
 }
 
 /* --- TEXT --- */
