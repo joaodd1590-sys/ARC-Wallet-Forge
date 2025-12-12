@@ -146,18 +146,19 @@ button.ghost {
     word-break: break-all;
 }
 
-/* --- QR CODE (melhorado e centralizado) --- */
+/* --- QR CODE (igual versão original) --- */
 .qrcode {
-    background: #ffffff;
-    padding: 10px;
-    border-radius: 10px;
+    display: none;                     
     width: 200px;
     height: 200px;
-
-    display: none;
+    background: var(--glass);          
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 20px auto;
+    display: flex;
     justify-content: center;
     align-items: center;
-
     margin: 22px auto 30px auto;
 }
 
