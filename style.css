@@ -23,20 +23,6 @@ body {
     padding: 22px;
 }
 
-/* --- LOGO + TÍTULO --- */
-.title-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.logo-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 6px;
-}
-
 /* --- MAIN LAYOUT --- */
 .wrap {
     width: 100%;
@@ -66,7 +52,20 @@ h2 { margin-bottom: 10px; }
 
 /* --- INPUT AREAS --- */
 .row { display: flex; gap: 12px; }
-.col { display: flex; flex-direction: column; gap: 8px; }
+
+.col { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+}
+
+/* 🔥 FIX PARA ALINHAR LABELS */
+.col label {
+    display: block;
+    margin-bottom: 6px;
+    line-height: 1.2;
+    min-height: 22px; /* força altura igual entre labels */
+}
 
 input, textarea, select {
     background: var(--glass);
@@ -86,7 +85,6 @@ select option {
     display: flex;
     gap: 10px;
     margin-top: 10px;
-    flex-wrap: wrap;
 }
 
 button {
@@ -142,21 +140,19 @@ button.ghost {
     border-radius: 10px;
     font-size: 13px;
     font-family: monospace;
+
     white-space: pre-wrap;
     word-break: break-all;
 }
 
-/* --- QR CODE (melhorado e centralizado) --- */
+/* --- QR CODE --- */
 .qrcode {
     background: #ffffff;
     padding: 10px;
     border-radius: 10px;
     width: 200px;
     height: 200px;
-
     display: none;
-    justify-content: center;
-    align-items: center;
 
     margin: 22px auto 30px auto;
 }
@@ -185,7 +181,9 @@ button.ghost {
     transition: 0.2s ease;
 }
 
-.footer-icons svg:hover { opacity: 0.7; }
+.footer-icons svg:hover {
+    opacity: 0.7;
+}
 
 /* --- COPY ANIMATION --- */
 @keyframes copySuccess {
@@ -194,11 +192,12 @@ button.ghost {
     100% { transform: scale(1); background: var(--accent); }
 }
 
-.copy-animate { animation: copySuccess 0.35s ease-out; }
+.copy-animate {
+    animation: copySuccess 0.35s ease-out;
+}
 
-/* RESPONSIVIDADE - CELULAR */
+/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 950px) {
-
     .wrap {
         grid-template-columns: 1fr;
     }
@@ -211,25 +210,12 @@ button.ghost {
         width: 180px;
         height: 180px;
     }
+}
 
-    .title-logo {
-        justify-content: center;
-    }
-
-    h1 {
-        font-size: 22px;
-        text-align: center;
-    }
-
-    .buttons {
-        justify-content: center;
-    }
-
-    .btn-row {
-        justify-content: center;
-    }
-
-    .card {
-        padding: 18px;
+/* 📱 FIX EXTRA → Inputs alinhados no mobile */
+@media (max-width: 550px) {
+    .row {
+        flex-direction: column;
+        gap: 16px;
     }
 }
