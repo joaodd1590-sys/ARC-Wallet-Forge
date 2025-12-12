@@ -1,123 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ARC Offline Wallet Generator</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ARC Offline Wallet Generator</title>
 
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css" />
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="logo.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png">
 
-    <!-- QRCode library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- QRCode library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <!-- Ethers.js (ES Module for Vercel) -->
-    <script type="module">
-        import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
-        window.ethers = ethers;
-    </script>
+  <!-- Ethers (ES module import to global) -->
+  <script type="module">
+    import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
+    window.ethers = ethers;
+  </script>
 </head>
-
 <body>
 
-    <div class="wrap">
+  <div class="wrap">
 
-        <!-- LEFT SIDE -->
-        <div class="card main">
+    <!-- LEFT -->
+    <div class="card main">
 
-            <!-- 🔵 LOGO + TITLE -->
-            <div class="title-logo">
-                <img src="logo.png" class="logo-icon" alt="ARC Logo">
-                <h1>ARC Offline Wallet Generator</h1>
-            </div>
+      <!-- logo + title -->
+      <div class="title-logo">
+        <img src="logo.png" alt="ARC Logo" class="logo-icon" />
+        <h1>ARC Offline Wallet Generator</h1>
+      </div>
 
-            <p class="lead">
-                Secure ARC wallet generation directly in your browser.
-                <strong>No data is ever uploaded.</strong>
-            </p>
+      <p class="lead">
+        Secure ARC wallet generation directly in your browser.
+        <strong>No data is ever uploaded.</strong>
+      </p>
 
-            <div class="row">
-                <div class="col">
-                    <label>Number of wallets</label>
-                    <input id="count" type="number" min="1" max="1000" value="1">
-                </div>
-
-                <div class="col">
-                    <label>Derive from mnemonic?</label>
-                    <select id="deriveMode">
-                        <option value="no">No – generate randomly</option>
-                        <option value="fromMnemonic">Yes – use provided mnemonic</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="mnemonicBox" class="col" style="display:none;">
-                <label>Mnemonic phrase:</label>
-                <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic phrase"></textarea>
-
-                <label>Derivation Path Template</label>
-                <input id="derivationPath" type="text" value="m/44'/60'/0'/0/{index}">
-                <span class="small">Use {index} to derive multiple wallets.</span>
-            </div>
-
-            <div class="buttons">
-                <button id="generateBtn">🔐 Generate Wallets</button>
-                <button id="clearBtn" class="ghost">Clear</button>
-                <button id="downloadAllBtn" class="ghost">📥 Download All (.txt)</button>
-            </div>
-
-            <div id="resultArea" class="result"></div>
-
-            <footer>
-                <div class="small danger"><strong>Warning:</strong> Never share your private keys.</div>
-                <div class="small">Works fully offline after initial CDN load (browser cache).</div>
-            </footer>
-
+      <div class="row">
+        <div class="col">
+          <label>Number of wallets</label>
+          <input id="count" type="number" min="1" max="1000" value="1" />
         </div>
 
-        <!-- RIGHT SIDE -->
-        <div class="card side">
-            <h2>Preview / Utilities</h2>
-
-            <div id="qrcode" class="qrcode">QR</div>
-
-            <div class="actions">
-                <button id="genExample" class="ghost">Generate Example</button>
-                <button id="copyExample" class="ghost">Copy Sample Address</button>
-            </div>
-
-            <div class="small features">
-                <strong>Features:</strong>
-                <ul>
-                    <li>Offline wallet generation</li>
-                    <li>Mnemonic + Private Key + Public Key</li>
-                    <li>Encrypted Keystore JSON export</li>
-                    <li>Custom derivation paths</li>
-                </ul>
-            </div>
+        <div class="col">
+          <label>Derive from mnemonic?</label>
+          <select id="deriveMode">
+            <option value="no">No – generate randomly</option>
+            <option value="fromMnemonic">Yes – use provided mnemonic</option>
+          </select>
         </div>
+      </div>
 
+      <div id="mnemonicBox" class="col" style="display:none;">
+        <label>Mnemonic phrase:</label>
+        <textarea id="mnemonicInput" rows="2" placeholder="enter your mnemonic phrase"></textarea>
+
+        <label>Derivation Path Template</label>
+        <input id="derivationPath" type="text" value="m/44'/60'/0'/0/{index}" />
+        <span class="small">Use {index} to derive multiple wallets.</span>
+      </div>
+
+      <div class="buttons">
+        <button id="generateBtn">🔐 Generate Wallets</button>
+        <button id="clearBtn" class="ghost">Clear</button>
+        <button id="downloadAllBtn" class="ghost">📥 Download All (.txt)</button>
+      </div>
+
+      <div id="resultArea" class="result"></div>
+
+      <footer>
+        <div class="small danger"><strong>Warning:</strong> Never share your private keys.</div>
+        <div class="small">Works fully offline after initial CDN load (browser cache).</div>
+      </footer>
     </div>
 
-    <!-- FOOTER -->
-    <div class="footer">
-        <div class="footer-icons">
-            <a href="https://github.com/joaodd1590-sys/ARC-Wallet-Forge" target="_blank">
-                <img src="github.svg" width="28">
-            </a>
-            <a href="https://x.com/cj54475427" target="_blank">
-                <img src="x-icon.svg" width="26">
-            </a>
-        </div>
+    <!-- RIGHT -->
+    <div class="card side">
+      <h2>Preview / Utilities</h2>
 
-        Built by João Carlos · ARC Ecosystem Community 💙  
-        <br>
-        © 2025 ARC Wallet Forge. All rights reserved.
+      <!-- Premium QR wrapper: white rounded panel -->
+      <div id="qrcodeWrap" class="qrcode-wrap" aria-hidden="true">
+        <div id="qrcode" class="qrcode"></div>
+      </div>
+
+      <div class="actions">
+        <button id="genExample" class="ghost">Generate Example</button>
+        <button id="copyExample" class="ghost">Copy Sample Address</button>
+      </div>
+
+      <div class="small features">
+        <strong>Features:</strong>
+        <ul>
+          <li>Offline wallet generation</li>
+          <li>Mnemonic + Private Key + Public Key</li>
+          <li>Encrypted Keystore JSON export</li>
+          <li>Custom derivation paths</li>
+        </ul>
+      </div>
     </div>
 
-    <script src="script.js"></script>
+  </div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="footer-icons">
+      <a href="https://github.com/joaodd1590-sys/ARC-Wallet-Forge" target="_blank" rel="noopener">
+        <img src="github.svg" alt="GitHub" />
+      </a>
+      <a href="https://x.com/cj54475427" target="_blank" rel="noopener">
+        <img src="x-icon.svg" alt="X" />
+      </a>
+    </div>
+
+    Built by João Carlos · ARC Ecosystem Community 💙
+    <br />
+    © 2025 ARC Wallet Forge. All rights reserved.
+  </div>
+
+  <!-- script -->
+  <script src="script.js"></script>
 </body>
 </html>
