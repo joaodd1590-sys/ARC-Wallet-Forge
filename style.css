@@ -218,37 +218,3 @@ button.ghost {
         gap: 16px;
     }
 }
-    /* ================= HEADER ================= */
-
-.app-header {
-  width: 100%;
-  margin-bottom: 26px;
-}
-
-.header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 14px 22px;
-  display: flex;
-  align-items: center;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-}
-
-.header-title {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #e6eef8;
-}
-
