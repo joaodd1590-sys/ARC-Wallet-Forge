@@ -248,3 +248,26 @@ function download(content, filename) {
 
     URL.revokeObjectURL(url);
 }
+.security-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ef4444;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.security-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px);
+}
+
