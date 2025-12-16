@@ -245,4 +245,22 @@ button.copy-animate {
     opacity: 1;
     transform: translateX(-50%) translateY(-6px);
 }
+/* HEADER WITH LOGO */
+.site-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.site-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+/* FOOTER LINE */
+.footer {
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 18px;
+}
 
