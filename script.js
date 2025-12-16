@@ -20,21 +20,22 @@ function animateCopy(btn) {
     setTimeout(() => btn.classList.remove("copy-animate"), 350);
 }
 
-/* === COPY PRIVATE KEY (WARNING) === */
-function animatePrivateKeyWarning(btn) {
-    const originalText = btn.textContent;
+/* === SECURITY TOAST (PRIVATE KEY WARNING) === */
+function showSecurityToast(message) {
+    let toast = document.querySelector(".security-toast");
 
-    btn.textContent = "⚠ Cuidado: não compartilhe";
-    btn.classList.add("copy-animate");
-    btn.style.background = "#ef4444";
-    btn.style.color = "#fff";
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.className = "security-toast";
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.classList.add("show");
 
     setTimeout(() => {
-        btn.textContent = originalText;
-        btn.style.background = "";
-        btn.style.color = "";
-        btn.classList.remove("copy-animate");
-    }, 1800);
+        toast.classList.remove("show");
+    }, 2200);
 }
 
 /* === SHOW/HIDE MNEMONIC BOX === */
@@ -158,10 +159,11 @@ Private Key:
             animateCopy(copyAddr);
         });
 
-        // Copy Private Key (SECURE WARNING)
+        // Copy Private Key (TOAST WARNING)
         copyPk.addEventListener("click", () => {
             navigator.clipboard.writeText(privateKey);
-            animatePrivateKeyWarning(copyPk);
+            animateCopy(copyPk);
+            showSecurityToast("⚠ Warning: never share this private key");
         });
 
         // Download TXT
