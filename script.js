@@ -14,10 +14,27 @@ const genExample = $("genExample");
 const copyExample = $("copyExample");
 const downloadAllBtn = $("downloadAllBtn");
 
-/* === COPY ANIMATION === */
+/* === COPY ANIMATION (NORMAL) === */
 function animateCopy(btn) {
     btn.classList.add("copy-animate");
     setTimeout(() => btn.classList.remove("copy-animate"), 350);
+}
+
+/* === COPY PRIVATE KEY (WARNING) === */
+function animatePrivateKeyWarning(btn) {
+    const originalText = btn.textContent;
+
+    btn.textContent = "⚠ Cuidado: não compartilhe";
+    btn.classList.add("copy-animate");
+    btn.style.background = "#ef4444";
+    btn.style.color = "#fff";
+
+    setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = "";
+        btn.style.color = "";
+        btn.classList.remove("copy-animate");
+    }, 1800);
 }
 
 /* === SHOW/HIDE MNEMONIC BOX === */
@@ -109,7 +126,7 @@ Private Key:
         hidePk.textContent = "Hide";
         hidePk.className = "ghost";
 
-        // --- BUTTON ROW WRAPPER ---
+        // --- BUTTON ROW ---
         const btnRow = document.createElement("div");
         btnRow.className = "btn-row";
 
@@ -124,7 +141,7 @@ Private Key:
 
         // --- BUTTON LOGIC ---
 
-        // Show QR
+        // QR
         qrBtn.addEventListener("click", () => {
             qrcodeEl.style.display = "flex";
             qrcodeEl.innerHTML = "";
@@ -141,13 +158,13 @@ Private Key:
             animateCopy(copyAddr);
         });
 
-        // Copy Private Key
+        // Copy Private Key (SECURE WARNING)
         copyPk.addEventListener("click", () => {
             navigator.clipboard.writeText(privateKey);
-            animateCopy(copyPk);
+            animatePrivateKeyWarning(copyPk);
         });
 
-        // Download INDIVIDUAL TXT
+        // Download TXT
         dlTxt.addEventListener("click", () => {
             const txt = `
 Address: ${address}
@@ -158,7 +175,7 @@ Mnemonic: ${mnemonic}
             download(txt, `wallet_${address}.txt`);
         });
 
-        // Export JSON Keystore
+        // Export JSON
         dlJson.addEventListener("click", async () => {
             const pwd = prompt("Password to encrypt:");
             if (!pwd) return;
@@ -169,11 +186,9 @@ Mnemonic: ${mnemonic}
         // Hide Private Key
         hidePk.addEventListener("click", () => {
             const span = $("pk_" + i);
-            if (span.textContent.includes("•••")) {
-                span.textContent = privateKey;
-            } else {
-                span.textContent = "•••••••••••••••••••••••• (hidden)";
-            }
+            span.textContent = span.textContent.includes("•••")
+                ? privateKey
+                : "•••••••••••••••••••••••• (hidden)";
         });
 
         resultArea.appendChild(box);
@@ -196,17 +211,7 @@ downloadAllBtn.addEventListener("click", () => {
         payload += card.textContent.trim() + "\n\n";
     });
 
-    const blob = new Blob([payload], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `arc-wallets-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    URL.revokeObjectURL(url);
+    download(payload, `arc-wallets-${Date.now()}.txt`);
 });
 
 /* === QR EXAMPLE BUTTON === */
