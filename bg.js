@@ -26,7 +26,7 @@ initDrops();
 
 function draw() {
     // fade suave
-    ctx.fillStyle = "rgba(5, 11, 19, 0.08)";
+    ctx.fillStyle = "rgba(120, 180, 255, 0.20)";
     ctx.fillRect(0, 0, w, h);
 
     ctx.fillStyle = "rgba(120, 180, 255, 0.35)";
@@ -36,7 +36,7 @@ function draw() {
         const text = chars[Math.floor(Math.random() * chars.length)];
         ctx.fillText(text, i * fontSize, drops[i]);
 
-        drops[i] += fontSize * 0.6;
+        drops[i] += fontSize * 0.3;
 
         if (drops[i] > h && Math.random() > 0.97) {
             drops[i] = 0;
