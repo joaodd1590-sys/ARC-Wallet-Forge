@@ -77,12 +77,12 @@ h2 {
     gap: 8px;
 }
 
-/* Label alignment fix (keeps inputs aligned) */
+/* Label alignment fix */
 .col label {
     display: block;
     margin-bottom: 6px;
     line-height: 1.2;
-    min-height: 22px; /* enforces consistent label height */
+    min-height: 22px;
 }
 
 /* Inputs */
@@ -96,7 +96,7 @@ select {
     color: #fff;
 }
 
-/* Select dropdown fix (dark theme) */
+/* Select dropdown fix */
 select option {
     background: #0f1724 !important;
     color: white !important;
@@ -130,23 +130,30 @@ button:active {
     background: var(--accent-active);
 }
 
-/* Secondary / ghost buttons */
+/* Ghost buttons */
 button.ghost {
     background: transparent;
     border: 1px solid rgba(255,255,255,0.15);
 }
 
-/* --- Wallet action buttons --- */
+/* --- Wallet action buttons (DESKTOP SINGLE ROW) --- */
 .btn-row {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
     margin-top: 10px;
+    flex-wrap: nowrap; /* desktop: one line */
 }
 
 .btn-row button {
     font-size: 13px;
     padding: 8px 12px;
+}
+
+/* Allow wrapping only on smaller screens */
+@media (max-width: 900px) {
+    .btn-row {
+        flex-wrap: wrap;
+    }
 }
 
 /* --- Generated wallet output --- */
@@ -197,6 +204,8 @@ button.ghost {
     margin-top: 40px;
     color: var(--muted);
     font-size: 13px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 18px;
 }
 
 /* Footer social icons */
@@ -227,6 +236,49 @@ button.ghost {
     animation: copySuccess 0.35s ease-out;
 }
 
+/* Force animation even with hover */
+button.copy-animate {
+    animation: copySuccess 0.35s ease-out !important;
+    background: #22c55e !important;
+}
+
+/* --- Security warning toast (MORE SPACE FROM BOTTOM) --- */
+.security-toast {
+    position: fixed;
+    bottom: 40px; /* increased spacing */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ef4444;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.security-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+/* --- Header layout (logo + title) --- */
+.site-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.site-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
 /* --- Responsive layout --- */
 @media (max-width: 950px) {
     .wrap {
@@ -249,53 +301,4 @@ button.ghost {
         flex-direction: column;
         gap: 16px;
     }
-}
-
-/* Force animation even when hover styles are active */
-button.copy-animate {
-    animation: copySuccess 0.35s ease-out !important;
-    background: #22c55e !important;
-}
-
-/* --- Security warning toast --- */
-.security-toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ef4444;
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 9999;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.security-toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-6px);
-}
-
-/* --- Header layout (logo + title) --- */
-.site-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.site-logo {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-}
-
-/* Footer top divider */
-.footer {
-    border-top: 1px solid rgba(255,255,255,0.12);
-    padding-top: 18px;
 }
