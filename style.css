@@ -8,8 +8,12 @@
     --glass: rgba(255,255,255,0.03);
 }
 
-* { box-sizing: border-box; }
+/* Global reset */
+* {
+    box-sizing: border-box;
+}
 
+/* Base page styling */
 body {
     margin: 0;
     background: linear-gradient(180deg, var(--bg), #04121a);
@@ -21,8 +25,9 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 22px;
+}
 
-/* --- MAIN LAYOUT --- */
+/* --- Main layout --- */
 .wrap {
     width: 100%;
     max-width: 1100px;
@@ -35,7 +40,7 @@ body {
     align-items: start;
 }
 
-/* --- CARDS --- */
+/* --- Card containers --- */
 .card {
     background: var(--card);
     padding: 20px;
@@ -44,29 +49,46 @@ body {
     border: 1px solid rgba(255,255,255,0.04);
 }
 
-h1 { margin-bottom: 10px; font-size: 26px; }
-h2 { margin-bottom: 10px; }
-
-.lead { color: var(--muted); margin-bottom: 16px; }
-
-/* --- INPUT AREAS --- */
-.row { display: flex; gap: 12px; }
-
-.col { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
+/* Headings */
+h1 {
+    margin-bottom: 10px;
+    font-size: 26px;
 }
 
-/* 🔥 FIX PARA ALINHAR LABELS */
+h2 {
+    margin-bottom: 10px;
+}
+
+/* Intro text */
+.lead {
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+/* --- Form layout --- */
+.row {
+    display: flex;
+    gap: 12px;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Label alignment fix (keeps inputs aligned) */
 .col label {
     display: block;
     margin-bottom: 6px;
     line-height: 1.2;
-    min-height: 22px; /* força altura igual entre labels */
+    min-height: 22px; /* enforces consistent label height */
 }
 
-input, textarea, select {
+/* Inputs */
+input,
+textarea,
+select {
     background: var(--glass);
     border: 1px solid rgba(255,255,255,0.15);
     padding: 10px;
@@ -74,12 +96,13 @@ input, textarea, select {
     color: #fff;
 }
 
+/* Select dropdown fix (dark theme) */
 select option {
     background: #0f1724 !important;
     color: white !important;
 }
 
-/* --- BUTTONS --- */
+/* --- Primary buttons --- */
 .buttons {
     display: flex;
     gap: 10px;
@@ -107,12 +130,13 @@ button:active {
     background: var(--accent-active);
 }
 
+/* Secondary / ghost buttons */
 button.ghost {
     background: transparent;
     border: 1px solid rgba(255,255,255,0.15);
 }
 
-/* --- BUTTON ROW INSIDE WALLET --- */
+/* --- Wallet action buttons --- */
 .btn-row {
     display: flex;
     gap: 8px;
@@ -125,7 +149,7 @@ button.ghost {
     padding: 8px 12px;
 }
 
-/* --- RESULT BLOCK --- */
+/* --- Generated wallet output --- */
 .result {
     display: grid;
     gap: 14px;
@@ -144,7 +168,7 @@ button.ghost {
     word-break: break-all;
 }
 
-/* --- QR CODE --- */
+/* --- QR code container --- */
 .qrcode {
     background: #ffffff;
     padding: 10px;
@@ -156,11 +180,18 @@ button.ghost {
     margin: 22px auto 30px auto;
 }
 
-/* --- TEXT --- */
-.small { font-size: 13px; color: var(--muted); }
-.danger { color: #ff6f6f; font-weight: bold; }
+/* --- Utility text --- */
+.small {
+    font-size: 13px;
+    color: var(--muted);
+}
 
-/* --- FOOTER --- */
+.danger {
+    color: #ff6f6f;
+    font-weight: bold;
+}
+
+/* --- Footer --- */
 .footer {
     text-align: center;
     margin-top: 40px;
@@ -168,6 +199,7 @@ button.ghost {
     font-size: 13px;
 }
 
+/* Footer social icons */
 .footer-icons {
     display: flex;
     justify-content: center;
@@ -184,7 +216,7 @@ button.ghost {
     opacity: 0.7;
 }
 
-/* --- COPY ANIMATION --- */
+/* --- Copy feedback animation --- */
 @keyframes copySuccess {
     0% { transform: scale(1); background: var(--accent); }
     30% { transform: scale(0.93); background: #22c55e; }
@@ -195,7 +227,7 @@ button.ghost {
     animation: copySuccess 0.35s ease-out;
 }
 
-/* --- MOBILE RESPONSIVE --- */
+/* --- Responsive layout --- */
 @media (max-width: 950px) {
     .wrap {
         grid-template-columns: 1fr;
@@ -211,18 +243,21 @@ button.ghost {
     }
 }
 
-/* 📱 FIX EXTRA → Inputs alinhados no mobile */
+/* Mobile input spacing fix */
 @media (max-width: 550px) {
     .row {
         flex-direction: column;
         gap: 16px;
     }
 }
-    /* força animação mesmo com hover */
+
+/* Force animation even when hover styles are active */
 button.copy-animate {
     animation: copySuccess 0.35s ease-out !important;
     background: #22c55e !important;
 }
+
+/* --- Security warning toast --- */
 .security-toast {
     position: fixed;
     bottom: 24px;
@@ -245,7 +280,8 @@ button.copy-animate {
     opacity: 1;
     transform: translateX(-50%) translateY(-6px);
 }
-/* HEADER WITH LOGO */
+
+/* --- Header layout (logo + title) --- */
 .site-header {
     display: flex;
     align-items: center;
@@ -258,9 +294,8 @@ button.copy-animate {
     object-fit: contain;
 }
 
-/* FOOTER LINE */
+/* Footer top divider */
 .footer {
     border-top: 1px solid rgba(255,255,255,0.12);
     padding-top: 18px;
 }
-
