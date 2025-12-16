@@ -14,8 +14,10 @@ const genExample = $("genExample");
 const copyExample = $("copyExample");
 const downloadAllBtn = $("downloadAllBtn");
 
-/* === CLICK ANIMATION (GENERIC) === */
+/* === CLICK ANIMATION (USED EVERYWHERE) === */
 function animateClick(btn) {
+    btn.classList.remove("copy-animate"); // reset if needed
+    void btn.offsetWidth;                 // force reflow
     btn.classList.add("copy-animate");
     setTimeout(() => btn.classList.remove("copy-animate"), 300);
 }
@@ -31,7 +33,7 @@ function showCopied(btn) {
     }, 1200);
 }
 
-/* === SECURITY TOAST (PRIVATE KEY) === */
+/* === SECURITY WARNING TOAST === */
 function showSecurityToast(message) {
     let toast = document.querySelector(".security-toast");
 
@@ -46,7 +48,7 @@ function showSecurityToast(message) {
 
     setTimeout(() => {
         toast.classList.remove("show");
-    }, 2200);
+    }, 2400);
 }
 
 /* === SHOW/HIDE MNEMONIC BOX === */
@@ -55,7 +57,7 @@ deriveMode.addEventListener("change", () => {
         deriveMode.value === "fromMnemonic" ? "block" : "none";
 });
 
-/* === CLEAR EVERYTHING === */
+/* === CLEAR === */
 clearBtn.addEventListener("click", () => {
     animateClick(clearBtn);
     resultArea.innerHTML = "";
@@ -65,6 +67,7 @@ clearBtn.addEventListener("click", () => {
 /* === GENERATE WALLETS === */
 generateBtn.addEventListener("click", async () => {
     animateClick(generateBtn);
+
     if (!window.ethers) return alert("Ethers.js not loaded.");
 
     const count = Math.min(1000, Math.max(1, Number(countInput.value)));
@@ -82,7 +85,6 @@ generateBtn.addEventListener("click", async () => {
     }
 
     for (let i = 0; i < count; i++) {
-
         let wallet;
         if (baseMnemonic) {
             const path = derivationPathInput.value.replace("{index}", i);
@@ -114,7 +116,6 @@ Private Key:
 <span id="pk_${i}">${privateKey}</span>
         `;
 
-        // --- BUTTONS ---
         const qrBtn = document.createElement("button");
         qrBtn.textContent = "QR";
         qrBtn.className = "ghost";
@@ -144,8 +145,6 @@ Private Key:
 
         btnRow.append(qrBtn, copyAddr, copyPk, dlTxt, dlJson, hidePk);
         box.appendChild(btnRow);
-
-        // --- BUTTON LOGIC ---
 
         qrBtn.onclick = () => {
             animateClick(qrBtn);
@@ -196,7 +195,7 @@ Mnemonic: ${mnemonic}
     }
 });
 
-/* === DOWNLOAD ALL WALLETS === */
+/* === DOWNLOAD ALL === */
 downloadAllBtn.addEventListener("click", () => {
     animateClick(downloadAllBtn);
 
@@ -211,7 +210,7 @@ downloadAllBtn.addEventListener("click", () => {
     download(payload, `arc-wallets-${Date.now()}.txt`);
 });
 
-/* === GENERATE QR EXAMPLE === */
+/* === GENERATE EXAMPLE === */
 genExample.onclick = () => {
     animateClick(genExample);
     const w = ethers.Wallet.createRandom();
@@ -220,7 +219,7 @@ genExample.onclick = () => {
     new QRCode(qrcodeEl, { text: w.address, width: 200, height: 200 });
 };
 
-/* === COPY SAMPLE ADDRESS === */
+/* === COPY SAMPLE === */
 copyExample.onclick = () => {
     const img = qrcodeEl.querySelector("img");
     if (!img) return alert("Generate example QR first!");
