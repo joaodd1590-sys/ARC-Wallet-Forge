@@ -302,3 +302,8 @@ button.copy-animate {
         gap: 16px;
     }
 }
+/* Ensure mnemonic input starts from the left */
+#mnemonicInput {
+    text-align: left;
+}
+
