@@ -306,26 +306,4 @@ button.copy-animate {
 #mnemonicInput {
     text-align: left;
 }
-.footer {
-    position: relative;
-    width: 100%;
-    margin-top: 40px;
-    padding-top: 26px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 13px;
-}
-
-/* Full-width footer divider */
-.footer::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100vw;              /* full screen width */
-    height: 1px;
-    background: rgba(255,255,255,0.12);
-}
-
 
