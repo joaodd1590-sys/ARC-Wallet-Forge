@@ -14,16 +14,31 @@ const genExample = $("genExample");
 const copyExample = $("copyExample");
 const downloadAllBtn = $("downloadAllBtn");
 
-/* === COPY ANIMATION (NORMAL) === */
+/* === GLOBAL BUTTON CLICK ANIMATION === */
+document.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON") {
+        animateCopy(e.target);
+    }
+});
+
+/* === COPY ANIMATION === */
 function animateCopy(btn) {
     btn.classList.add("copy-animate");
-    setTimeout(() => btn.classList.remove("copy-animate"), 350);
+    setTimeout(() => btn.classList.remove("copy-animate"), 300);
 }
 
-/* === SECURITY TOAST (PRIVATE KEY WARNING) === */
+/* === TEMP TEXT FEEDBACK (Copied!) === */
+function showCopied(btn) {
+    const original = btn.textContent;
+    btn.textContent = "Copied!";
+    setTimeout(() => {
+        btn.textContent = original;
+    }, 1200);
+}
+
+/* === SECURITY TOAST === */
 function showSecurityToast(message) {
     let toast = document.querySelector(".security-toast");
-
     if (!toast) {
         toast = document.createElement("div");
         toast.className = "security-toast";
@@ -84,7 +99,6 @@ generateBtn.addEventListener("click", async () => {
         const privateKey = wallet.privateKey;
         const mnemonic = wallet.mnemonic?.phrase || baseMnemonic || "";
 
-        // --- WALLET CARD OUTPUT ---
         const box = document.createElement("div");
         box.className = "out";
 
@@ -102,7 +116,6 @@ Private Key:
 <span id="pk_${i}">${privateKey}</span>
         `;
 
-        // --- BUTTONS ---
         const qrBtn = document.createElement("button");
         qrBtn.textContent = "QR";
         qrBtn.className = "ghost";
@@ -127,47 +140,29 @@ Private Key:
         hidePk.textContent = "Hide";
         hidePk.className = "ghost";
 
-        // --- BUTTON ROW ---
         const btnRow = document.createElement("div");
         btnRow.className = "btn-row";
 
-        btnRow.appendChild(qrBtn);
-        btnRow.appendChild(copyAddr);
-        btnRow.appendChild(copyPk);
-        btnRow.appendChild(dlTxt);
-        btnRow.appendChild(dlJson);
-        btnRow.appendChild(hidePk);
-
+        btnRow.append(qrBtn, copyAddr, copyPk, dlTxt, dlJson, hidePk);
         box.appendChild(btnRow);
 
-        // --- BUTTON LOGIC ---
-
-        // QR
-        qrBtn.addEventListener("click", () => {
+        qrBtn.onclick = () => {
             qrcodeEl.style.display = "flex";
             qrcodeEl.innerHTML = "";
-            new QRCode(qrcodeEl, {
-                text: address,
-                width: 200,
-                height: 200
-            });
-        });
+            new QRCode(qrcodeEl, { text: address, width: 200, height: 200 });
+        };
 
-        // Copy Address
-        copyAddr.addEventListener("click", () => {
+        copyAddr.onclick = () => {
             navigator.clipboard.writeText(address);
-            animateCopy(copyAddr);
-        });
+            showCopied(copyAddr);
+        };
 
-        // Copy Private Key (TOAST WARNING)
-        copyPk.addEventListener("click", () => {
+        copyPk.onclick = () => {
             navigator.clipboard.writeText(privateKey);
-            animateCopy(copyPk);
             showSecurityToast("⚠ Warning: never share this private key");
-        });
+        };
 
-        // Download TXT
-        dlTxt.addEventListener("click", () => {
+        dlTxt.onclick = () => {
             const txt = `
 Address: ${address}
 Public Key: ${publicKey}
@@ -175,77 +170,62 @@ Private Key: ${privateKey}
 Mnemonic: ${mnemonic}
 `;
             download(txt, `wallet_${address}.txt`);
-        });
+        };
 
-        // Export JSON
-        dlJson.addEventListener("click", async () => {
+        dlJson.onclick = async () => {
             const pwd = prompt("Password to encrypt:");
             if (!pwd) return;
             const json = await wallet.encrypt(pwd);
             download(json, `keystore_${address}.json`);
-        });
+        };
 
-        // Hide Private Key
-        hidePk.addEventListener("click", () => {
+        hidePk.onclick = () => {
             const span = $("pk_" + i);
             span.textContent = span.textContent.includes("•••")
                 ? privateKey
                 : "•••••••••••••••••••••••• (hidden)";
-        });
+        };
 
         resultArea.appendChild(box);
     }
 });
 
-/* === DOWNLOAD ALL WALLETS (.txt) === */
+/* === DOWNLOAD ALL WALLETS === */
 downloadAllBtn.addEventListener("click", () => {
-    const cards = Array.from(resultArea.children).filter(c => c.classList.contains("out"));
-
-    if (!cards.length) {
-        alert("No wallets to download. Generate at least one.");
-        return;
-    }
+    const cards = [...resultArea.children].filter(c => c.classList.contains("out"));
+    if (!cards.length) return alert("No wallets to download.");
 
     let payload = "";
-
-    cards.forEach((card, idx) => {
-        payload += `=== Wallet ${idx + 1} ===\n`;
-        payload += card.textContent.trim() + "\n\n";
+    cards.forEach((card, i) => {
+        payload += `=== Wallet ${i + 1} ===\n${card.textContent.trim()}\n\n`;
     });
 
     download(payload, `arc-wallets-${Date.now()}.txt`);
 });
 
-/* === QR EXAMPLE BUTTON === */
-genExample.addEventListener("click", () => {
+/* === QR EXAMPLE === */
+genExample.onclick = () => {
     const w = ethers.Wallet.createRandom();
     qrcodeEl.style.display = "flex";
     qrcodeEl.innerHTML = "";
-    new QRCode(qrcodeEl, {
-        text: w.address,
-        width: 200,
-        height: 200
-    });
-});
+    new QRCode(qrcodeEl, { text: w.address, width: 200, height: 200 });
+};
 
-/* === COPY SAMPLE ADDRESS FROM QR === */
-copyExample.addEventListener("click", () => {
+/* === COPY SAMPLE === */
+copyExample.onclick = () => {
     const img = qrcodeEl.querySelector("img");
     if (!img) return alert("Generate example QR first!");
     navigator.clipboard.writeText(img.src);
-    animateCopy(copyExample);
-});
+    showCopied(copyExample);
+};
 
-/* === SIMPLE DOWNLOAD FUNCTION === */
+/* === DOWNLOAD HELPER === */
 function download(content, filename) {
     const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     a.click();
-
     URL.revokeObjectURL(url);
 }
-
