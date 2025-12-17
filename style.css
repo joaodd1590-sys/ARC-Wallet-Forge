@@ -306,4 +306,26 @@ button.copy-animate {
 #mnemonicInput {
     text-align: left;
 }
+.site-header {
+    display: flex;
+    align-items: flex-start; /* 🔥 isso resolve o problema */
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.site-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.site-title h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.site-title .lead {
+    margin-top: 6px;
+}
 
