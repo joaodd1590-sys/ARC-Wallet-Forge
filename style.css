@@ -191,6 +191,7 @@ button.ghost {
 .small {
     font-size: 13px;
     color: var(--muted);
+    margin-top: 10px;
 }
 
 .danger {
